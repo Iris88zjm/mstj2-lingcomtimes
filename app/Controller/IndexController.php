@@ -123,7 +123,7 @@ class IndexController extends Home_Controller
         $yunPian     = new YunPianSms('6da328d306cfa93b8fd6a1c1e003aa84');
         // $yunPianUser = $yunPian->getUser();
         $smsCode     = $this->createSmsCode();
-        $result      = $yunPian->sendCode("【慕尚天街】您的验证码是". $smsCode ."。如非本人操作，请忽略本短信", $phone);
+        $result      = $yunPian->sendCode("【】您的验证码是". $smsCode ."。如非本人操作，请忽略本短信", $phone);
         // $result['code'] = 0;
         // $result['msg'] = '发送成功';
         if ($result['code'] === 0 && $result['msg'] == '发送成功') {
