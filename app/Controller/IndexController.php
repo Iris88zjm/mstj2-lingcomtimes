@@ -1,7 +1,7 @@
 <?php 
 
 namespace app\Controller;
-
+use app\library\YunPianSms;
 use app\core\Home_Controller;
 /**
  * 默认控制器
@@ -73,4 +73,85 @@ class IndexController extends Home_Controller
         ajaxReturn(400);
     }
 
+    /**
+     * 生成验证码
+     * @param  integer $length 验证码长度
+     * @return string          验证码字符串
+     */
+    public function createSmsCode($length = 6)
+    {
+        $min = pow(10, ($length -1));
+        $max = pow(10, $length) -1;
+        return rand($min, $max);
+    }
+
+    /**
+     * 发送短信前验证
+     * 1、验证手机号码是否正确
+     * 2、验证手机短信次数
+     * @param  int $phone 手机号
+     * @return json
+     */
+    public function checkSms($phone)
+    {
+        if($this->checkPhoneNumber($phone) == false) {
+            ajaxReturn(202, '请填写正确的手机号码');
+        }
+
+        $date = date('Ymd', time());
+        $smsCheckInfo = parent::$model->select('sms_check', ['num', 'time'], ['date' => $date, 'phone' => $phone])[0];
+
+        if ($smsCheckInfo['num'] >= 5) {
+            ajaxReturn(202, '今日发送短信已到上限，请明天再试');
+        }
+
+        if (intval(time()) - intval($smsCheckInfo['time']) < 60) {
+            ajaxReturn(202, '短信已发送，请60s后重试');
+        }
+    }
+
+    /**
+     * 发送短信接口
+     * @return json
+     */
+    public function sendSms()
+    {
+        $phone = intval(post('phone'));
+        // $phone = 18336344600;
+        $this->checkSms($phone);
+
+        $yunPian     = new YunPianSms('6da328d306cfa93b8fd6a1c1e003aa84');
+        // $yunPianUser = $yunPian->getUser();
+        $smsCode     = $this->createSmsCode();
+        $result      = $yunPian->sendCode("【慕尚天街】您的验证码是". $smsCode ."。如非本人操作，请忽略本短信", $phone);
+        // $result['code'] = 0;
+        // $result['msg'] = '发送成功';
+        if ($result['code'] === 0 && $result['msg'] == '发送成功') {
+            $date  = date('Ymd', time());
+
+            $attr  = ['date' => $date, 'phone' => $phone];
+            $smsCheckInfo = parent::$model->select('sms_check', '*', $attr)[0];
+
+            if ($smsCheckInfo && is_array($smsCheckInfo)) {
+                parent::$model->update('sms_check', [
+                    'num'  => $smsCheckInfo['num'] + 1,
+                    'time' => time(),
+                    'code' => $smsCode
+                ], $attr);
+            } else {
+                parent::$model->delete('sms_check', ['phone' => $phone]);
+                parent::$model->insert('sms_check', [
+                    'phone' => $phone,
+                    'num'   => 1,
+                    'time'  => time(),
+                    'date'  => date('Ymd', time()),
+                    'code'  => $smsCode
+                ], $attr);
+            }
+
+            ajaxReturn(200, '发送成功');
+        } else {
+            ajaxReturn(202, '发送成功');
+        }
+    }
 }

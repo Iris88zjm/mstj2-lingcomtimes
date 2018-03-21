@@ -26,6 +26,10 @@
                             <label>电话<span>*</span></label>
                             <input type="text" id="phone" name="phone" placeholder="">
                         </div>
+                        <div class="entry clear">
+                            <label>验证码<span>*</span></label>
+                            <input type="text" id="phone" name="phone" placeholder="">
+                        </div>
                         <input type="hidden" name="c" value="<?php echo $c ?>">
                     </form>
                     <a class="btn" href="javascript:;" id="submit_contect" onclick="submit_contect()">提交</a>
