@@ -2,15 +2,15 @@
 Navicat MySQL Data Transfer
 
 Source Server         : localhost_3306
-Source Server Version : 50505
+Source Server Version : 50714
 Source Host           : localhost:3306
-Source Database       : fxl-onetou
+Source Database       : mstj2-lingcomtimes
 
 Target Server Type    : MYSQL
-Target Server Version : 50505
+Target Server Version : 50714
 File Encoding         : 65001
 
-Date: 2017-11-04 14:20:33
+Date: 2018-03-21 23:23:57
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -32,6 +32,25 @@ CREATE TABLE `contect` (
 -- ----------------------------
 -- Records of contect
 -- ----------------------------
+
+-- ----------------------------
+-- Table structure for `sms_check`
+-- ----------------------------
+DROP TABLE IF EXISTS `sms_check`;
+CREATE TABLE `sms_check` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `phone` varchar(16) NOT NULL,
+  `date` int(8) NOT NULL,
+  `num` tinyint(1) NOT NULL DEFAULT '1',
+  `time` int(10) NOT NULL,
+  `code` int(6) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of sms_check
+-- ----------------------------
+INSERT INTO `sms_check` VALUES ('2', '18336344600', '20180321', '5', '1521642491', '607513');
 
 -- ----------------------------
 -- Table structure for `user`
