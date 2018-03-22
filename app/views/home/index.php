@@ -123,7 +123,17 @@
         function getCode(e,i){
             checkPhone(i); //验证手机号码
             if(isPhone){
-                resetCode(i); //倒计时
+                if(i == 1){
+                    var phone = $('#form_contenct #phone').val();                
+                }else{
+                    var phone = $('#form_contenct_2 #phone').val(); 
+                }
+                $.post('<?php echo base_url('index/sendSms') ?>', {phone: phone}, function(data) {
+                    alert(data.msg);
+                    if (data.status == 200) {
+                        resetCode(i); //倒计时
+                    }
+                }, 'JSON');
             }else{
                 if(i == 1){
                     $('#form_contenct #phone').focus();                

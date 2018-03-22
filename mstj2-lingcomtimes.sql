@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50714
 File Encoding         : 65001
 
-Date: 2018-03-21 23:23:57
+Date: 2018-03-22 13:31:55
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -27,7 +27,7 @@ CREATE TABLE `contect` (
   `time` int(10) NOT NULL,
   `c` varchar(16) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of contect
@@ -45,12 +45,11 @@ CREATE TABLE `sms_check` (
   `time` int(10) NOT NULL,
   `code` int(6) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of sms_check
 -- ----------------------------
-INSERT INTO `sms_check` VALUES ('2', '18336344600', '20180321', '5', '1521642491', '607513');
 
 -- ----------------------------
 -- Table structure for `user`

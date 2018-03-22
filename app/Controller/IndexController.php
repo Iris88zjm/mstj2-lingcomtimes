@@ -25,6 +25,9 @@ class IndexController extends Home_Controller
      */
     private function _ckeckData($data)
     {
+        if (empty(intval($data['code']))) {
+            ajaxReturn(202, '请填写验证码');
+        }
         if(empty($data['username'])) {
             ajaxReturn(202, '请填写姓名');
         }
@@ -34,6 +37,14 @@ class IndexController extends Home_Controller
             if($this->checkPhoneNumber($data['phone']) == false) {
                 ajaxReturn(202, '请填写正确的手机号码');
             }
+            $code = parent::$model->select('sms_check', 'code', [
+                'date'  => date('Ymd', time()),
+                'phone' => $data['phone']
+            ])[0];
+
+            if ($code != intval($data['code'])) {
+                ajaxReturn(202, '验证码填写错误');
+            }
         }
 
         // 根据 姓名+手机号判断申请是否存在
@@ -41,6 +52,7 @@ class IndexController extends Home_Controller
         if (!empty($count)) {
             ajaxReturn(202, '请勿重复领取！');
         }
+
     }
 
     /**
@@ -50,7 +62,7 @@ class IndexController extends Home_Controller
     {
         $postData = post();
         $this->_ckeckData($postData);
-        
+        unset($postData['code']);
         $postData['time'] = time();
         $postData['ip']   = getIp();
         parent::$model->insert('contect', $postData);
@@ -94,6 +106,7 @@ class IndexController extends Home_Controller
      */
     public function checkSms($phone)
     {
+
         if($this->checkPhoneNumber($phone) == false) {
             ajaxReturn(202, '请填写正确的手机号码');
         }
@@ -116,19 +129,18 @@ class IndexController extends Home_Controller
      */
     public function sendSms()
     {
-        $phone = intval(post('phone'));
+        $phone = post('phone');
         // $phone = 18336344600;
         $this->checkSms($phone);
 
         $yunPian     = new YunPianSms('6da328d306cfa93b8fd6a1c1e003aa84');
         // $yunPianUser = $yunPian->getUser();
         $smsCode     = $this->createSmsCode();
-        $result      = $yunPian->sendCode("【】您的验证码是". $smsCode ."。如非本人操作，请忽略本短信", $phone);
+        $result      = $yunPian->sendCode("【慕尚天街】您的验证码是". $smsCode ."。如非本人操作，请忽略本短信", $phone);
         // $result['code'] = 0;
         // $result['msg'] = '发送成功';
         if ($result['code'] === 0 && $result['msg'] == '发送成功') {
             $date  = date('Ymd', time());
-
             $attr  = ['date' => $date, 'phone' => $phone];
             $smsCheckInfo = parent::$model->select('sms_check', '*', $attr)[0];
 
@@ -151,7 +163,7 @@ class IndexController extends Home_Controller
 
             ajaxReturn(200, '发送成功');
         } else {
-            ajaxReturn(202, '发送成功');
+            ajaxReturn(202, '发送失败');
         }
     }
 }
